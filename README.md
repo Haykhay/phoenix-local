@@ -54,9 +54,10 @@ Each Phoenix root gates a `floci` variable so the **same** root targets real AWS
 
 ## Status / open items
 
-- **Pin `FLOCI_VERSION`** to the current stable that includes the Control Tower
-  landing-zone provider fixes (floci PRs #7298, #7403) — `.env.example` is a
-  placeholder to confirm.
+- **`FLOCI_VERSION` is pinned to `nightly`** — proven by the `floci-smoke` CI to
+  apply Organizations + Control Tower landing zone + DynamoDB cleanly. `2.4.0`
+  fails the landing-zone read-back (fix is in main, not yet in a stable tag).
+  **Re-pin to the first stable release** that includes PRs #7298/#7403.
 - The **`floci` provider gate** in each root is finalised on the `floci-harness`
   branch (first PR against this standard).
 - Emulated ≠ identical: IAM enforcement, OIDC *federation* semantics, and true
