@@ -57,6 +57,26 @@ Each Phoenix root gates a `floci` variable so the **same** root targets real AWS
 | `make down` | stop (keep the data volume) |
 | `make reset` | wipe container + volume |
 | `make logs` / `make sh` | follow logs / shell in |
+| `make verify-backstage` | seed Floci, build Backstage, verify catalog/orchestrator startup, and run downstream tests across all four repos |
+
+## Backstage integration verification
+
+Keep the four repositories as siblings named `backstage`, `AWS`,
+`AWS-organization`, and `phoenix-local`, then run:
+
+```bash
+make verify-backstage PROJECT=phoenix-integration-$USER
+```
+
+The project name scopes both Docker Compose stacks so cleanup never targets an
+unrelated developer environment. Override repository locations with
+`PHOENIX_BACKSTAGE_DIR`, `PHOENIX_AWS_DIR`, `PHOENIX_AWS_ORG_DIR`, and
+`PHOENIX_LOCAL_DIR`. Set `KEEP_STACK=1` to retain containers after verification.
+
+The check proves local integration only: Backstage starts in explicit `floci`
+mode, reads the seeded account registry, loads the catalog/templates, and runs
+the orchestration/provider gates. It does not execute Terraform from Backstage
+and does not choose a workflow runner location.
 
 ## Status / open items
 
