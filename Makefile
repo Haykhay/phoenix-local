@@ -24,6 +24,11 @@ wait: ## block until the endpoint answers
 seed: ## apply the Layer 0 baseline (org + landing zone + OUs + registry) into Floci
 	./seed/seed.sh
 
+smoke: ## apply the self-contained smoke (org + Control Tower + DynamoDB) against Floci
+	terraform -chdir=smoke init -input=false
+	terraform -chdir=smoke apply -auto-approve -input=false
+	terraform -chdir=smoke output
+
 logs: ## follow Floci logs
 	$(COMPOSE) logs -f floci
 
