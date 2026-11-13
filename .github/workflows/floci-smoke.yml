@@ -1,0 +1,59 @@
+name: floci-smoke
+
+on:
+  push:
+    branches: [floci-harness, main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      floci_version:
+        description: Override FLOCI_VERSION (else uses the pin in .env.example)
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare env (pin Floci)
+        env:
+          OVERRIDE: ${{ inputs.floci_version }}
+        run: |
+          cp .env.example .env
+          if [ -n "$OVERRIDE" ]; then
+            sed -i "s/^FLOCI_VERSION=.*/FLOCI_VERSION=$OVERRIDE/" .env
+          fi
+          grep FLOCI_VERSION .env
+
+      - name: Start Floci
+        run: docker compose -p ci up -d
+
+      - name: Wait for Floci
+        run: |
+          for _ in $(seq 1 60); do
+            if curl -s http://localhost:4566/ -o /dev/null; then exit 0; fi
+            sleep 1
+          done
+          echo "Floci did not come up" >&2
+          docker compose -p ci logs
+          exit 1
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+          terraform_wrapper: false
+
+      - name: Apply smoke against Floci (Organizations + Control Tower + DynamoDB)
+        working-directory: smoke
+        run: |
+          terraform init -input=false
+          terraform apply -auto-approve -input=false
+          terraform output
+
+      - name: Teardown
+        if: always()
+        run: docker compose -p ci down -v
