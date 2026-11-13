@@ -14,9 +14,15 @@ whole of Layer 0 (account vending) plus the Layer 2/3 data plane.
 - Every Phoenix concern is its own repo with a protected `main`:
   `phoenix-aws-org` (Layer 0), `phoenix-aws` (Layers 2/3, incl. networking),
   `phoenix-backstage` (the front door), and **this** repo (the local env).
-- Agents **branch → PR → CI → merge to `main`**. Direct pushes to `main` are off.
-- Everyone **develops Floci and Backstage against this standard**; when a change
-  lands in a repo's `main`, others `git pull` and build on it.
+- Agents **branch → PR → merge to `main`**. Direct pushes to `main` are off.
+- **Build is local, not CI.** Each agent pulls and runs Floci on their own
+  machine (`make up` / `make seed` / `terraform apply -var floci=true`) — that
+  is the inner loop. CI never builds or applies.
+- **CI's only job is the downstream-breakage gate** — `terraform plan` /
+  `terraform test` (mock providers) proving a change doesn't break any flow.
+  The `floci-smoke` here is manual-only (re-verify the pin on demand).
+- Changing the **shared standard** (this repo) is how agents coordinate so one
+  agent's change can't break another's local downstream — review it on the PR.
 - The **pin** in [`.env.example`](.env.example) (`FLOCI_VERSION`) *is* the
   standard — an unpinned or drifting version is not.
 

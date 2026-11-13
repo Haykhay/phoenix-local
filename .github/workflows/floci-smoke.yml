@@ -1,9 +1,9 @@
 name: floci-smoke
 
+# Manual only. The Floci apply is a LOCAL activity (make up / seed / smoke);
+# this is an on-demand check to re-verify the FLOCI_VERSION pin against the
+# Control Tower landing zone — not a per-push/PR build gate.
 on:
-  push:
-    branches: [floci-harness, main]
-  pull_request:
   workflow_dispatch:
     inputs:
       floci_version:
