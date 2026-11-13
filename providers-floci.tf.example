@@ -1,0 +1,41 @@
+# Reference: the Floci-friendly AWS provider a Phoenix root uses for local runs.
+# Gate it in each root behind a `floci` variable so the SAME root targets either
+# real AWS (assume_role) or local Floci (endpoints). Finalised on the
+# floci-harness branch; copied here as the shared contract.
+#
+#   variable "floci" { type = bool, default = false }
+#
+#   provider "aws" {
+#     region                      = var.aws_region
+#     access_key                  = var.floci ? "test" : null
+#     secret_key                  = var.floci ? "test" : null
+#     skip_credentials_validation = var.floci
+#     skip_requesting_account_id  = var.floci
+#     skip_metadata_api_check     = var.floci
+#     s3_use_path_style           = var.floci
+#     dynamic "assume_role" {
+#       for_each = var.floci ? [] : [1]
+#       content { role_arn = var.assume_role_arn }
+#     }
+#     dynamic "endpoints" {
+#       for_each = var.floci ? [1] : []
+#       content {
+#         organizations  = "http://localhost:4566"
+#         controltower   = "http://localhost:4566"
+#         servicecatalog = "http://localhost:4566"
+#         iam            = "http://localhost:4566"
+#         sts            = "http://localhost:4566"
+#         s3             = "http://localhost:4566"
+#         dynamodb       = "http://localhost:4566"
+#         cloudformation = "http://localhost:4566"
+#         codepipeline   = "http://localhost:4566"
+#         codebuild      = "http://localhost:4566"
+#         lambda         = "http://localhost:4566"
+#         sfn            = "http://localhost:4566"
+#         kms            = "http://localhost:4566"
+#         sns            = "http://localhost:4566"
+#         sqs            = "http://localhost:4566"
+#         events         = "http://localhost:4566"
+#       }
+#     }
+#   }

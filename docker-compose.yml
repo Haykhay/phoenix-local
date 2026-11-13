@@ -1,0 +1,27 @@
+# Phoenix local AWS — the single standard (Floci). Pin FLOCI_VERSION in .env;
+# anything unpinned is NOT the standard. Each agent runs its OWN instance:
+#
+#   docker compose -p phoenix-<agent> up -d   # unique project name = isolated state
+#
+# Host clients reach it at http://localhost:4566; in-container clients (the real
+# containers Floci spawns for Lambda/CodeBuild) reach it at http://floci:4566.
+services:
+  floci:
+    image: floci/floci:${FLOCI_VERSION:?set FLOCI_VERSION in .env (see .env.example)}
+    hostname: floci
+    ports:
+      - "${FLOCI_PORT:-4566}:4566"
+    environment:
+      FLOCI_HOSTNAME: floci
+      FLOCI_PORT: "4566"
+      FLOCI_STORAGE_MODE: "${FLOCI_STORAGE_MODE:-memory}"
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+      FLOCI_DEFAULT_REGION: "${AWS_DEFAULT_REGION:-eu-west-1}"
+      FLOCI_DEFAULT_ACCOUNT_ID: "${FLOCI_ACCOUNT_ID:-000000000000}"
+    volumes:
+      # Floci spawns real containers for Lambda / CodeBuild (AFT's pipelines).
+      - /var/run/docker.sock:/var/run/docker.sock
+      - floci-data:/app/data
+
+volumes:
+  floci-data:
