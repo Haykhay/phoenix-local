@@ -13,24 +13,26 @@ for command in docker terraform aws actionlint node; do
 done
 
 run_preflight() {
-  PATH="$tmp/bin:$PATH" \
+  PATH="$tmp/bin:/usr/bin:/bin" \
   PHOENIX_BACKSTAGE_DIR="$tmp/backstage" \
   PHOENIX_AWS_DIR="$tmp/aws" \
   PHOENIX_AWS_ORG_DIR="$tmp/aws-org" \
   PHOENIX_LOCAL_DIR="$tmp/local" \
   PROJECT="phoenix-integration-test" \
+  RUN_ID="case" \
   "$script" --preflight
 }
 
 output=$(run_preflight)
-grep -q '^local_project=phoenix-integration-test-floci$' <<<"$output"
-grep -q '^backstage_project=phoenix-integration-test-backstage$' <<<"$output"
+grep -q '^local_project=phoenix-integration-test-case-floci$' <<<"$output"
+grep -q '^backstage_project=phoenix-integration-test-case-backstage$' <<<"$output"
 
-if PATH="$tmp/bin:$PATH" \
+if PATH="$tmp/bin:/usr/bin:/bin" \
   PHOENIX_BACKSTAGE_DIR="$tmp/missing" \
   PHOENIX_AWS_DIR="$tmp/aws" \
   PHOENIX_AWS_ORG_DIR="$tmp/aws-org" \
   PHOENIX_LOCAL_DIR="$tmp/local" \
+  RUN_ID="case" \
   "$script" --preflight >"$tmp/missing.out" 2>&1; then
   echo "expected missing repository preflight to fail" >&2
   exit 1
