@@ -12,7 +12,8 @@ whole of Layer 0 (account vending) plus the Layer 2/3 data plane.
 **`main` is the adopted standard. Anything not in `main` is not yet adopted.**
 
 - Every Phoenix concern is its own repo with a protected `main`:
-  `phoenix-aws-org` (Layer 0), `phoenix-aws` (Layers 2/3, incl. networking),
+  `phoenix-aws-org` (Layer 0), `phoenix-aws` (Layers 1-2: networking and
+  infrastructure), `phoenix-k8s` (Layer 3: what runs inside each cluster),
   `phoenix-backstage` (the front door), and **this** repo (the local env).
 - Agents **branch → PR → merge to `main`**. Direct pushes to `main` are off.
 - **Build is local, not CI.** Each agent pulls and runs Floci on their own
