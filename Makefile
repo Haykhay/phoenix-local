@@ -5,7 +5,7 @@ PROJECT ?= phoenix
 PORT    ?= 4566
 COMPOSE := docker compose -p $(PROJECT)
 
-.PHONY: up down reset seed wait logs sh
+.PHONY: up down reset seed wait logs sh verify-backstage
 
 up: ## start this agent's Floci instance and wait for it
 	$(COMPOSE) up -d
@@ -28,6 +28,9 @@ smoke: ## apply the self-contained smoke (org + Control Tower + DynamoDB) agains
 	terraform -chdir=smoke init -input=false
 	terraform -chdir=smoke apply -auto-approve -input=false
 	terraform -chdir=smoke output
+
+verify-backstage: ## verify all Phoenix repos together through Backstage and Floci
+	./scripts/verify-backstage-integration.sh
 
 logs: ## follow Floci logs
 	$(COMPOSE) logs -f floci
